@@ -1,0 +1,29 @@
+---
+title: "QLF survey analysis"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(readr)
+library(janitor)
+```
+
+#Principles in practice
+
+Across the 10 affiliates, fostering partnerships is the principle most commonly put into practice in neighborhood revitalization efforts. While on average affiliates indicated implementing most principles to a moderate (4) or a large (5) extent, there is opportunity for improvement particularly in focusing on systems which had the lowest average.
+
+```{r}
+partners_all
+```
+
+
+Trial
+```{r}
+```
+
+
