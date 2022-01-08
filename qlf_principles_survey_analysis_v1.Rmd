@@ -6,11 +6,18 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
+knitr::opts_chunk$set(echo = FALSE)
+```
+```{r}
 library(tidyverse)
 library(readr)
 library(janitor)
+```
+
+
+```{r}
+implement_principles <- qlf_principles_affiliates_clean %>% 
+  select(neighborhood, contains("implement_")) %>% 
 ```
 
 #Principles in practice
@@ -18,12 +25,72 @@ library(janitor)
 Across the 10 affiliates, fostering partnerships is the principle most commonly put into practice in neighborhood revitalization efforts. While on average affiliates indicated implementing most principles to a moderate (4) or a large (5) extent, there is opportunity for improvement particularly in focusing on systems which had the lowest average.
 
 ```{r}
-partners_all
-```
+implement_principles <- qlf_principles_affiliates_for_r %>% 
+  select(neighborhood, contains("implement_")) %>% 
+  mutate(impl_part_num = case_when(
+    implement_partnerships == "Not at all" ~ "1",
+    implement_partnerships == "To a small extent" ~ "2",
+    implement_partnerships == "To some extent" ~ "3",
+    implement_partnerships == "To a moderate extent" ~ "4",
+implement_partnerships == "To a large extent" ~ "5")) %>% 
+  mutate(impl_part_num = as.numeric(impl_part_num))
+  
+implement_principles <- implement_principles %>% 
+  mutate(impl_build_num = case_when(
+    implement_build_power == "Not at all" ~ "1",
+    implement_build_power == "To a small extent" ~ "2",
+    implement_build_power == "To some extent" ~ "3",
+    implement_build_power == "To a moderate extent" ~ "4",
+    implement_build_power == "To a large extent" ~ "5")) %>% 
+  mutate(impl_build_num = as.numeric(impl_build_num))
 
+implement_principles <- implement_principles %>% 
+  mutate(impl_acct_num = case_when(
+    implement_accountability == "Not at all" ~ "1",
+    implement_accountability == "To a small extent" ~ "2",
+    implement_accountability == "To some extent" ~ "3",
+    implement_accountability == "To a moderate extent" ~ "4",
+    implement_accountability == "To a large extent" ~ "5")) %>% 
+  mutate(impl_acct_num = as.numeric(impl_acct_num))
 
-Trial
-```{r}
+implement_principles <- implement_principles %>% 
+  mutate(impl_learn_num = case_when(
+    implement_learn == "Not at all" ~ "1",
+    implement_learn == "To a small extent" ~ "2",
+    implement_learn == "To some extent" ~ "3",
+    implement_learn == "To a moderate extent" ~ "4",
+    implement_learn == "To a large extent" ~ "5")) %>% 
+  mutate(impl_learn_num = as.numeric(impl_learn_num))
+
+implement_principles <- implement_principles %>% 
+  mutate(impl_systems_num = case_when(
+    implement_systems == "Not at all" ~ "1",
+    implement_systems == "To a small extent" ~ "2",
+    implement_systems == "To some extent" ~ "3",
+    implement_systems == "To a moderate extent" ~ "4",
+    implement_systems == "To a large extent" ~ "5")) %>% 
+  mutate(impl_systems_num = as.numeric(impl_systems_num))
+
+implement_principles_pivot <- implement_principles %>%
+  select(neighborhood, contains ("impl_")) %>% 
+  pivot_longer(cols = -neighborhood,
+                             names_to = "principle",
+                             values_to = "value")
+
+implement_principles_avg <- implement_principles_pivot %>% 
+ group_by(principle) %>% 
+  summarize(mean = mean(value)) %>% 
+  arrange(desc(mean))
+  
+  ggplot(data = implement_principles_avg, 
+       mapping = aes(x = principle, 
+                     y = mean,
+                     fill = principle
+                     )) +
+  geom_col(show.legend = FALSE)+
+  geom_text(aes(label = mean),
+            vjust = 1.5,
+            color = "black")
 ```
 
 
