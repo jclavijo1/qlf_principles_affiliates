@@ -60,6 +60,11 @@ partners_all %>%
   filter(neighborhood == "Southwood (Charlottesville)") %>% 
  view()
 
+qlf_principles_affiliates_clean %>% 
+  select(neighborhood, contains("residents_lead"), contains("residents_plan"), contains("residents_imp")) %>% 
+  view()
+ 
+
 #coalition_diversity
 diversity_questions <- qlf_principles_affiliates_clean %>% 
   select(neighborhood, coalition_diverstiy , resident_diversity) %>%  
@@ -191,6 +196,55 @@ summary_useful_resources <- useful_resources%>%
             color = "white") +
     theme_minimal()
 
+#Principles Questions
+Principles_questions <- qlf_principles_affiliates_clean %>% 
+  select(neighborhood, contains("equity_"), contains("learn_"), contains("account_"), contains("systems_")) %>% 
+  pivot_longer(cols = -neighborhood,
+               names_to = "question",
+               values_to = "response")
+
+Principles_questions <- Principles_questions %>% 
+  mutate(value_num = case_when(
+    response == "Novice" ~ "1",
+    response == "Intermediate" ~ "2",
+    response == "Advanced" ~ "3",
+    response == "Expert" ~ "4",
+    response == "Not at all" ~ "1",
+    response == "To a small extent" ~ "2",
+    response == "To some extent" ~ "3",
+    response == "To a moderate extent" ~ "4",
+    response == "To a large extent" ~ "5")) %>% 
+  mutate(value_num = as.numeric(value_num)) 
+
+Principles_questions_summary <- Principles_questions%>% 
+  group_by(question) %>%
+  summarise(mean = mean(value_num)) %>% 
+  mutate(principle = case_when(
+    question == "account_knowledgeable_racism_context" ~ "account",
+    question == "account_processes_transparency" ~ "account",
+    question == "account_support_resident_access" ~ "account",
+    question == "equity_center" ~ "equity",
+    question == "equity_reflect" ~ "equity",
+    question == "equity_reflect_power_dynamics" ~ "equity",
+    question == "equity_training_barriers" ~ "equity",
+    question == "equity_training_cultural_competence" ~ "equity",
+    question == "equity_understand_barriers" ~ "equity",
+    question == "equity_understand_root_causes" ~ "equity",
+    question == "learn_develop_ideas" ~ "learn",
+    question == "learn_failure_asopporutnity" ~ "learn",
+    question == "learn_invest_new_approaches" ~ "learn",
+    question == "learn_support_new_thinking" ~ "learn",
+    question == "systems_engage_residents_systems" ~ "systems",
+    question == "systems_support_systems_efforts" ~ "systems"))
+  
+Principles_questions_summary %>% 
+  ggplot(mapping = aes(x = mean, 
+                         y = 1,
+                       fill = principle)) +
+      geom_point(show.legend = FALSE) +
+      theme_minimal() 
+
+  
 
 #Export data
 write_rds(qlf_principles_affiliates_clean,
